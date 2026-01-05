@@ -39,28 +39,34 @@ code: |
   nav.set_section('section_intro')
   sees_nav_bar
   snapshot_start
+  set_progress(5)
   how_to_use
   accept_terms
 
   nav.set_section('section_company')
   if not know_finance_company:
     company_kickout
+  set_progress(20)
   company.name.first
   company.address.address
   account_number
+  set_progress(40)
 
   nav.set_section('section_car_property')
   repo_date
   car_make
   items.gather()
+  set_progress(60)
   
   nav.set_section('section_user')
   users[0].name.first
   users[0].address.address
+  set_progress(80)
   users[0].has_email_address
   letter_date
 
   nav.set_section('section_download')
+  set_progress(100)
   forms_assembling
   snapshot_forms
   get_docs_screen
@@ -381,17 +387,203 @@ under: |
   ${ action_button_html(interview_url(i="docassemble.ILAO:feedback.yml", easy_form_interview=ilao_easy_form_url, easy_form_title=ilao_easy_form_title, easy_form_page=current_context().question_id, easy_form_variable=current_context().variable, local=False,reset=1), label=':comment: Was this program helpful?', color="#181c36", size="md", new_window=True) }
 ---
 objects:
-  - al_user_bundle: ALDocumentBundle.using(elements= [letter], filename="request_to_return_property_in_repossessed_par.pdf", title="All forms")
+  - al_user_bundle: ALDocumentBundle.using(elements= [instructions, letter], filename="request_to_return_property_in_repossessed_par.pdf", title="All forms")
 ---
 objects:
   - letter: ALDocument.using(title="Request to return property in repossessed car", filename="request_property_in_car_letter.pdf", has_addendum=False, enabled=True)
+  - instructions: ALDocument.using(title="Instructions", filename="request_property_in_car_instrutions.pdf", has_addendum=False, enabled=True)
 ---
 code: |
-  #instructions.enabled = True
+  instructions.enabled = True
   letter.enabled = True
+---
+attachment:
+  - name: instructions
+    variable name: instructions[i]
+    filename: instructions
+    docx template file: request_property_in_car_instructions.docx
 ---
 attachment:
   - name: letter
     variable name: letter[i]
     filename: letter
     docx template file: request_property_in_car_letter.docx
+---
+section: Company
+id: company review screen
+event: section_company
+question: |
+  Company
+subquestion: |
+  Edit your answers below.
+review:
+  - Edit: company.name.first
+    button: |
+      **Financial company's name:**
+      ${company.name.first}
+  - Edit: company.address.address
+    button: |
+      **${company.name.first}'s address:**
+      ${company.address.on_one_line(bare=True)}
+  - Edit: account_number
+    button: |
+      **Your account number with ${company.name.first}:**
+      ${account_number}
+---
+section: Your car and property
+id: company review screen
+event: section_car_property
+question: |
+  Your car and property
+subquestion: |
+  Edit your answers below.
+review:
+  - Edit: repo_date
+    button: |
+      **Date your car was repossessed:**
+      ${repo_date}
+  - Edit: car_make
+    button: |
+      **Your car:**
+      ${car_year} ${car_make} ${car_model}
+  - Edit: items.revisit
+    button: |
+      **Your property:**
+
+      % for item in items:
+        * ${item.name.text}
+      % endfor
+---
+section: Your car and property
+id: property review screen
+continue button field: items.revisit
+question: |
+    Edit your property
+subquestion: |
+  ${ items.table }
+
+  ${ items.add_action() }
+---
+table: items.table
+rows: items
+columns:
+  - Property: |
+      row_item.name.text if defined("row_item.name.text") else ""
+  - Edit: |
+      action_button_html(url_action(row_item.attr_name("review_item")), label="Edit", icon="pencil-alt")
+delete buttons: True
+confirm: True
+---
+section: Your car and property
+id: item review screen
+continue button field: x.review_item
+generic object: Thing
+question: |
+  Edit information about ${x.name.text}
+review: 
+  - Edit: x.name.text
+    button: |
+      **Your property:**
+      ${x.name.text}
+---
+section: About you
+id: user review screen
+event: section_user
+question: |
+  About you
+subquestion: |
+  Edit your answers below.
+review:
+  - Edit: users[0].name.first
+    button: |
+      **Your name:**
+      ${users[0].name_full()}
+  - Edit: users[0].address.address
+    button: |
+      **Your address:**
+      ${users[0].address.on_one_line(bare=True)}
+  - Edit: users[0].has_email_address
+    button: |
+      **Your contact information:**
+
+      % if users[0].has_email_address:
+      * Email: ${users[0].email}
+      % else:
+      * Email
+      % endif
+      % if users[0].phone_number != "":
+      * Phone: ${phone_number_formatted(users[0].phone_number)}
+      % else:
+      * Phone:
+      % endif
+  - Edit: letter_date
+    button: |
+      **When will you mail the letter?**
+      ${letter_date}
+---
+id: review screen
+event: review_answers
+question: |
+  Review screen
+subquestion: |
+  Edit your answers below.
+review: 
+  - note: |
+      <h4>Company</h4>
+  - Edit: company.name.first
+    button: |
+      **Financial company's name:**
+      ${company.name.first}
+  - Edit: company.address.address
+    button: |
+      **${company.name.first}'s address:**
+      ${company.address.on_one_line(bare=True)}
+  - Edit: account_number
+    button: |
+      **Your account number with ${company.name.first}:**
+      ${account_number}
+  - note: |
+      <h4>Your car and property</h4>
+  - Edit: repo_date
+    button: |
+      **Date your car was repossessed:**
+      ${repo_date}
+  - Edit: car_make
+    button: |
+      **Your car:**
+      ${car_year} ${car_make} ${car_model}
+  - Edit: items.revisit
+    button: |
+      **Your property:**
+
+      % for item in items:
+        * ${item.name.text}
+      % endfor
+  - note: |
+      <h4>About you</h4>
+  - Edit: users[0].name.first
+    button: |
+      **Your name:**
+      ${users[0].name_full()}
+  - Edit: users[0].address.address
+    button: |
+      **Your address:**
+      ${users[0].address.on_one_line(bare=True)}
+  - Edit: users[0].has_email_address
+    button: |
+      **Your contact information:**
+
+      % if users[0].has_email_address:
+      * Email: ${users[0].email}
+      % else:
+      * Email
+      % endif
+      % if users[0].phone_number != "":
+      * Phone: ${phone_number_formatted(users[0].phone_number)}
+      % else:
+      * Phone:
+      % endif
+  - Edit: letter_date
+    button: |
+      **When will you mail the letter?**
+      ${letter_date}
