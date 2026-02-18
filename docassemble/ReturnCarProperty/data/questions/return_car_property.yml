@@ -128,8 +128,7 @@ question: |
 subquestion: |
   A company must have repossessed a car with your property inside it to use this program. To make your letter you will need:
 
-  * The repossession company's name and address,
-  * Your account number used by the repossession company,
+  * The repossession agency's name and address,
   * The make, model, and year of your car, and
   * The items you left in your car.
 
@@ -139,7 +138,7 @@ subquestion: |
 
   Click on **{green words}** to learn what they mean. Some pages have a question mark in a circle ${ fa_icon("question-circle", color_css="#0dcaf0" ) } that helps explain things.
 
-  After you download your letter, you must mail it to the repossession company.
+  After you download your letter, you must mail it to the repossession agency.
 ---
 template: help_example
 subject: |
@@ -152,9 +151,11 @@ continue button field: about_your_letter
 question: |
   About your letter
 subquestion: |
-  The letter this program makes will tell the repossession company they are legally required to give you a detailed list of the property in your car when it was repossessed. It will also ask the company for information on how you can get the property back from them.
+  The letter this program makes will tell the repossession agency they are legally required to give you a detailed list of the property in your car when it was repossessed. It will also ask the agency for information on how you can get the property back from them.
 
-  The Illinois Collateral Recovery Act requires the reposssion company to give you notice within 5 business days of your car being repossessed. If you have not heard from them, this program can make a letter to ask the company you owe money to which company repossessed your car. To learn more, read ILAO's article about [**responding to a car repossession**](https://www.illinoislegalaid.org/node/31996).
+  The Illinois Collateral Recovery Act requires the repossession agency to give you notice within 5 business days of your car being repossessed. The agency is legally required to keep any personal property from the car for at least 45 days after sending you notice. They may charge a fee for the storage of the property.
+  
+  If you have not heard from the repossession agency, this program can make a letter to ask the company you owe money to which agency repossessed your car. To learn more, read ILAO's article about [**responding to a car repossession**](https://www.illinoislegalaid.org/node/31996). You may also be able to file a complaint with the [**Illinois Commerce Commission**](https://www.icc.illinois.gov/authority/collateral-recovery).
   
   You will need to send the letter by certified mail. Learn more about [**certified mail**](https://faq.usps.com/s/article/Certified-Mail-The-Basics).
 ---
@@ -182,7 +183,7 @@ continue button field: fin_company_note
 question: |
   Learning which company repossessed your car
 subquestion: |
-  You can contact the company you owe money to and ask them which repossession company repossessed your car. You could call the company, e-mail them, or send them a letter.
+  You can contact the company you owe money to and ask them which repossession agency repossessed your car. You could call the company, e-mail them, or send them a letter.
   
   This program can make a letter you can send to ask the company you owe money to tell you the name of the company that repossessed your car. 
 
@@ -249,12 +250,15 @@ subquestion: |
 fields:
   - Account number : account_number
     maxlength: 40
+    required: False
 ---
 template: help_account_number
 subject: |
   **Finding your account number**
 content: |  
   Your account number should be listed on the collection notice or letter you got from ${ repo_company.name.first } or from the company you owe money to. It might be called your file or customer number.
+
+  If you have not been given an account number, you can leave this blank.
 ---
 id: repo date
 question: |
@@ -385,7 +389,7 @@ subquestion: |
   % if know_repo_company:
   You do not have to enter your phone number or email address, but having them in your letter can help ${repo_company.name.first} send you your inventory quicker.
   % else:
-  You do not have to enter your phone number or email address, but having them in your letter can help ${fin_company.name.first} send you information about the repossession company quicker.
+  You do not have to enter your phone number or email address, but having them in your letter can help ${fin_company.name.first} send you information about the repossession agency quicker.
   % endif
 
   ${ collapse_template(contact_info_help) }  
@@ -416,7 +420,7 @@ question: |
 subquestion: |
   Your letter is ready. View and download your forms below. Click **:edit: Make changes** to fix any mistakes.
 
-  After you get your letter, sign it, make a copy, and send it along to the repossession company that took your car.  
+  After you get your letter, sign it, make a copy, and send it along to the repossession agency that took your car.  
 
   ${ action_button_html(url_action('review_answers'), label=':edit: Make changes', color='success', size="md") }
 
@@ -441,17 +445,15 @@ objects:
   - al_user_bundle: ALDocumentBundle.using(elements= [instructions, repo_letter, fin_letter], filename="request_to_return_property_in_repossessed_par.pdf", title="All forms")
 ---
 objects:
-  - repo_letter: ALDocument.using(title="Letter to repossession company", filename="request_letter.pdf", has_addendum=False)
-  - fin_letter: ALDocument.using(title="Letter to finance company", filename="request_letter.pdf", has_addendum=False)
+  - repo_letter: ALDocument.using(title="Letter to repossession agency", filename="request_letter.pdf", has_addendum=False)
+  - fin_letter: ALDocument.using(title="Letter to creditor", filename="request_letter.pdf", has_addendum=False)
   - instructions: ALDocument.using(title="Instructions", filename="instructions.pdf", has_addendum=False, enabled=True)
 ---
 code: |
   instructions.enabled = True
-  repo_letter.enabled = False
+  repo_letter.enabled = True
   fin_letter.enabled = False
-  if know_repo_company:
-    repo_letter.enabled = True
-  else:
+  if not know_repo_company:
     fin_letter.enabled = True
 ---
 attachment:
@@ -486,7 +488,7 @@ review:
       ${word(yesno(know_repo_company))}
   - Edit: repo_company.name.first
     button: |
-      **Repossession company's name:**
+      **repossession agency's name:**
       ${repo_company.name.first}
     show if: know_repo_company
   - Edit: repo_company.address.address
@@ -497,7 +499,11 @@ review:
   - Edit: account_number
     button: |
       **Your account number with ${repo_company.name.first}:**
+      % if account_number == "":
+      I don't know.
+      % else:
       ${account_number}
+      % endif
     show if: know_repo_company
   - Edit: fin_company.name.first
     button: |
@@ -616,7 +622,7 @@ review:
       ${word(yesno(know_repo_company))}
   - Edit: repo_company.name.first
     button: |
-      **Repossession company's name:**
+      **repossession agency's name:**
       ${repo_company.name.first}
     show if: know_repo_company
   - Edit: repo_company.address.address
@@ -627,7 +633,11 @@ review:
   - Edit: account_number
     button: |
       **Your account number with ${repo_company.name.first}:**
+      % if account_number == "":
+      I don't know.
+      % else:
       ${account_number}
+      % endif
     show if: know_repo_company
   - Edit: fin_company.name.first
     button: |
