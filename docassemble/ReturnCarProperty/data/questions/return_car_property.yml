@@ -47,14 +47,16 @@ code: |
 
   nav.set_section('section_company')
   set_progress(20)
-  if not know_repo_company:
+  if know_repo_company:
+    repo_company.name.first
+    repo_company.address.address
+    repo_company.account_number
+  else:
     fin_company_note
     fin_company.name.first
     fin_company.address.address
-  else:
-    repo_company.name.first
-    repo_company.address.address
-  account_number
+    fin_company.account_number
+    
   set_progress(40)
 
   nav.set_section('section_car_property')
@@ -116,7 +118,7 @@ question: |
 subquestion: |
   Welcome to Illinois Legal Aid Online's **Request return of personal property inside a repossessed car** Easy Form.
 
-  This program makes a letter asking for the return of your personal property left inside of a repossessed car. If needed, it can also make a letter to the creditor asking them to tell you the name of the repossession agency. 
+  This program makes a letter asking for the return of your personal property left inside of your repossessed car. If needed, it can also make a letter to the creditor asking them to tell you the name of the repossession agency. The creditor is the company you owe money to, usually a finance company or lender.
 
   To learn more, read ILAO's article about [**car repossession**](https://www.illinoislegalaid.org/node/32006).
 field: sees_nav_bar
@@ -126,7 +128,7 @@ continue button field: how_to_use
 question: |
   Instructions
 subquestion: |
-  A company must have repossessed a car with your property inside it to use this program. To make your letter you will need:
+  A company must have repossessed your car with your property inside it to use this program. To make your letter you will need:
 
   * The repossession agency's name and address,
   * The make, model, and year of your car, and
@@ -166,7 +168,7 @@ subquestion: |
 ---
 id: know repo company
 question: |
-  Do you know the name of the company that repossesed your car?
+  Do you know the name of the company that repossessed your car?
 subquestion: |
   This is referred to as the "repossession company" or "repossession agency." This might not be the same company as the towing company or the **{creditor}**.
 
@@ -246,34 +248,42 @@ fields:
     default: IL   
   - ZIP code: fin_company.address.zip
 ---
-id: account number
+id: repo company account number
 question: |
-  % if know_repo_company:
   What is your account number with ${repo_company.name.first}?
-  % else:
-  What is your account number with ${fin_company.name.first}?
-  % endif
 subquestion: |
   The account number could contain letters, numbers, or symbols.
 
-  ${ collapse_template(help_account_number) }  
-
+  ${ collapse_template(repo_help_account_number) }  
 fields:
-  - Account number : account_number
+  - Account number : repo_company.account_number
     maxlength: 40
     required: False
 ---
-template: help_account_number
+id: fin company account number
+question: |
+  What is your account number with ${fin_company.name.first}?
+subquestion: |
+  The account number could contain letters, numbers, or symbols.
+
+  ${ collapse_template(fin_help_account_number) }  
+fields:
+  - Account number : fin_company.account_number
+    maxlength: 40
+---
+template: repo_help_account_number
 subject: |
   **Finding your account number**
 content: |  
-  % if know_repo_company:
   Your account number should be listed on the collection notice or letter you got from ${ repo_company.name.first } or from the creditor. It might be called your file or customer number.
-  % else:
-  Your account number mat be listed on letters or other documents you have gotten from ${ fin_company.name.first }. It might be called your file or customer number.
-  % endif
   
   If you have not been given an account number, you can leave this blank.
+---
+template: fin_help_account_number
+subject: |
+  **Finding your account number**
+content: |  
+  Your account number may be listed on letters or other documents you have gotten from ${ fin_company.name.first }. It might be called your file or customer number.
 ---
 id: repo date
 question: |
@@ -457,25 +467,36 @@ under: |
   ${ action_button_html(interview_url(i="docassemble.ILAO:feedback.yml", easy_form_interview=ilao_easy_form_url, easy_form_title=ilao_easy_form_title, easy_form_page=current_context().question_id, easy_form_variable=current_context().variable, local=False,reset=1), label=':comment: Was this program helpful?', color="#181c36", size="md", new_window=True) }
 ---
 objects:
-  - al_user_bundle: ALDocumentBundle.using(elements= [instructions, repo_letter, fin_letter], filename="request_to_return_property_in_repossessed_par.pdf", title="All forms")
+  - al_user_bundle: ALDocumentBundle.using(elements= [repo_instructions, fin_instructions, repo_letter, fin_letter], filename="request_to_return_property_in_repossessed_par.pdf", title="All forms")
 ---
 objects:
   - repo_letter: ALDocument.using(title="Letter to repossession agency", filename="request_letter.pdf", has_addendum=False)
-  - fin_letter: ALDocument.using(title="Letter to creditor", filename="request_letter.pdf", has_addendum=False)
-  - instructions: ALDocument.using(title="Instructions", filename="instructions.pdf", has_addendum=False, enabled=True)
+  - fin_letter: ALDocument.using(title="Letter to creditor", filename="creditor_letter.pdf", has_addendum=False)
+  - repo_instructions: ALDocument.using(title="Instructions", filename="instructions.pdf", has_addendum=False)
+  - fin_instructions: ALDocument.using(title="Instructions", filename="creditor_instructions.pdf", has_addendum=False)
 ---
 code: |
-  instructions.enabled = True
+  repo_instructions.enabled = False
+  fin_instructions.enabled = False
   repo_letter.enabled = True
   fin_letter.enabled = False
+  if know_repo_company:
+    repo_instructions.enabled = True
   if not know_repo_company:
     fin_letter.enabled = True
+    fin_instructions.enabled = True
 ---
 attachment:
-  - name: instructions
-    variable name: instructions[i]
-    filename: instructions
+  - name: repo_instructions
+    variable name: repo_instructions[i]
+    filename: repo_instructions
     docx template file: request_property_in_car_instructions.docx
+---
+attachment:
+  - name: fin_instructions
+    variable name: fin_instructions[i]
+    filename: fin_instructions
+    docx template file: fin_property_car_instructions.docx
 ---
 attachment:
   - name: repo_letter
@@ -503,7 +524,7 @@ review:
       ${word(yesno(know_repo_company))}
   - Edit: repo_company.name.first
     button: |
-      **repossession agency's name:**
+      **Repossession agency's name:**
       ${repo_company.name.first}
     show if: know_repo_company
   - Edit: repo_company.address.address
@@ -511,18 +532,15 @@ review:
       **${repo_company.name.first}'s address:**
       ${repo_company.address.on_one_line(bare=True)}
     show if: know_repo_company
-  - Edit: account_number
+  - Edit: repo_company.account_number
     button: |
-      % if know_repo_company:
       **Your account number with ${repo_company.name.first}:**
-      % else:
-      **Your account number with ${fin_company.name.first}:**
-      % endif
-      % if account_number == "":
+      % if repo_company.account_number == "":
       I don't know.
       % else:
-      ${account_number}
+      ${repo_company.account_number}
       % endif
+    show if: know_repo_company
   - Edit: fin_company.name.first
     button: |
       **Name of the company you owe money to:**
@@ -532,6 +550,11 @@ review:
     button: |
       **${fin_company.name.first}'s address:**
       ${fin_company.address.on_one_line(bare=True)}
+    show if: not know_repo_company
+  - Edit: fin_company.account_number
+    button: |
+      **Your account number with ${fin_company.name.first}:**
+      ${fin_company.account_number}
     show if: not know_repo_company
 ---
 section: Your car and property
@@ -640,7 +663,7 @@ review:
       ${word(yesno(know_repo_company))}
   - Edit: repo_company.name.first
     button: |
-      **repossession agency's name:**
+      **Repossession agency's name:**
       ${repo_company.name.first}
     show if: know_repo_company
   - Edit: repo_company.address.address
@@ -648,18 +671,15 @@ review:
       **${repo_company.name.first}'s address:**
       ${repo_company.address.on_one_line(bare=True)}
     show if: know_repo_company
-  - Edit: account_number
+  - Edit: repo_company.account_number
     button: |
-      % if know_repo_company:
       **Your account number with ${repo_company.name.first}:**
-      % else:
-      **Your account number with ${fin_company.name.first}:**
-      % endif
-      % if account_number == "":
+      % if repo_company.account_number == "":
       I don't know.
       % else:
-      ${account_number}
+      ${repo_company.account_number}
       % endif
+    show if: know_repo_company
   - Edit: fin_company.name.first
     button: |
       **Name of the company you owe money to:**
@@ -669,6 +689,11 @@ review:
     button: |
       **${fin_company.name.first}'s address:**
       ${fin_company.address.on_one_line(bare=True)}
+    show if: not know_repo_company
+  - Edit: fin_company.account_number
+    button: |
+      **Your account number with ${fin_company.name.first}:**
+      ${fin_company.account_number}
     show if: not know_repo_company
   - note: |
       <h4>Your car and property</h4>
