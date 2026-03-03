@@ -29,7 +29,7 @@ code: |
 # Road map
 sections:
   - section_intro: Start
-  - section_company: Repo agency or creditor
+  - section_company: Repossession agency or creditor
   - section_car_property: Your car and property
   - section_user: About you
   - section_download: Download 
@@ -446,9 +446,15 @@ event: get_docs_screen
 question: |
   Download
 subquestion: |
+  % if know_repo_company:
   Your letter is ready. View and download your forms below. Click **:edit: Make changes** to fix any mistakes.
 
   After you get your letter, sign it, make a copy, and send it along to the repossession agency that took your car.  
+  % else:
+  Your letters are ready. View and download your forms below. Click **:edit: Make changes** to fix any mistakes.
+  
+  Read the instructions to learn how to send your letters.
+  % endif
 
   ${ action_button_html(url_action('review_answers'), label=':edit: Make changes', color='success', size="md") }
 
@@ -470,7 +476,7 @@ under: |
   ${ action_button_html(interview_url(i="docassemble.ILAO:feedback.yml", easy_form_interview=ilao_easy_form_url, easy_form_title=ilao_easy_form_title, easy_form_page=current_context().question_id, easy_form_variable=current_context().variable, local=False,reset=1), label=':comment: Was this program helpful?', color="#181c36", size="md", new_window=True) }
 ---
 objects:
-  - al_user_bundle: ALDocumentBundle.using(elements= [repo_instructions, fin_instructions, repo_letter, fin_letter], filename="request_to_return_property_in_repossessed_par.pdf", title="All forms")
+  - al_user_bundle: ALDocumentBundle.using(elements= [repo_instructions, fin_instructions, fin_letter, repo_letter], filename="request_to_return_property_in_repossessed_par.pdf", title="All forms")
 ---
 objects:
   - repo_letter: ALDocument.using(title="Letter to repossession agency", filename="request_letter.pdf", has_addendum=False)
@@ -513,11 +519,11 @@ attachment:
     filename: fin_letter
     docx template file: request_property_car_fin_letter.docx
 ---
-section: Repo agency or creditor
+section: Repossession agency or creditor
 id: company review screen
 event: section_company
 question: |
-  Repo agency or creditor
+  Repossession agency or creditor
 subquestion: |
   Edit your answers below.
 review:
@@ -663,7 +669,7 @@ subquestion: |
   Edit your answers below.
 review: 
   - note: |
-      <h4>Repo agency or creditor</h4>
+      <h4>Repossession agency or creditor</h4>
   - Edit: know_repo_company
     button: |
       **Do you know the name of the company that repossed your car?**
