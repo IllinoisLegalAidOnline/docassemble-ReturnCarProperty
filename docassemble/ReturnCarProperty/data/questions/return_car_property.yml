@@ -29,7 +29,7 @@ code: |
 # Road map
 sections:
   - section_intro: Start
-  - section_company: Company
+  - section_company: Repo agency or creditor
   - section_car_property: Your car and property
   - section_user: About you
   - section_download: Download 
@@ -255,6 +255,8 @@ subquestion: |
   The account number could contain letters, numbers, or symbols.
 
   ${ collapse_template(repo_help_account_number) }  
+
+  If you have not been given an account number, you can leave this blank.
 fields:
   - Account number : repo_company.account_number
     maxlength: 40
@@ -267,17 +269,18 @@ subquestion: |
   The account number could contain letters, numbers, or symbols.
 
   ${ collapse_template(fin_help_account_number) }  
+
+  If you have not been given an account number, you can leave this blank.
 fields:
   - Account number : fin_company.account_number
     maxlength: 40
+    required: False
 ---
 template: repo_help_account_number
 subject: |
   **Finding your account number**
 content: |  
   Your account number should be listed on the collection notice or letter you got from ${ repo_company.name.first } or from the creditor. It might be called your file or customer number.
-  
-  If you have not been given an account number, you can leave this blank.
 ---
 template: fin_help_account_number
 subject: |
@@ -510,11 +513,11 @@ attachment:
     filename: fin_letter
     docx template file: request_property_car_fin_letter.docx
 ---
-section: Company
+section: Repo agency or creditor
 id: company review screen
 event: section_company
 question: |
-  Company
+  Repo agency or creditor
 subquestion: |
   Edit your answers below.
 review:
@@ -536,7 +539,7 @@ review:
     button: |
       **Your account number with ${repo_company.name.first}:**
       % if repo_company.account_number == "":
-      I don't know.
+      None entered
       % else:
       ${repo_company.account_number}
       % endif
@@ -554,7 +557,11 @@ review:
   - Edit: fin_company.account_number
     button: |
       **Your account number with ${fin_company.name.first}:**
+      % if fin_company.account_number == "":
+      None entered
+      % else:
       ${fin_company.account_number}
+      % endif
     show if: not know_repo_company
 ---
 section: Your car and property
@@ -656,7 +663,7 @@ subquestion: |
   Edit your answers below.
 review: 
   - note: |
-      <h4>Company</h4>
+      <h4>Repo agency or creditor</h4>
   - Edit: know_repo_company
     button: |
       **Do you know the name of the company that repossed your car?**
@@ -675,7 +682,7 @@ review:
     button: |
       **Your account number with ${repo_company.name.first}:**
       % if repo_company.account_number == "":
-      I don't know.
+      None entered
       % else:
       ${repo_company.account_number}
       % endif
@@ -693,7 +700,11 @@ review:
   - Edit: fin_company.account_number
     button: |
       **Your account number with ${fin_company.name.first}:**
+      % if fin_company.account_number == "":
+      None entered
+      % else:
       ${fin_company.account_number}
+      % endif
     show if: not know_repo_company
   - note: |
       <h4>Your car and property</h4>
