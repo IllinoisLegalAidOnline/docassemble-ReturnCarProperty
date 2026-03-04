@@ -449,7 +449,7 @@ subquestion: |
   % if know_repo_company:
   Your letter is ready. View and download your forms below. Click **:edit: Make changes** to fix any mistakes.
 
-  After you get your letter, sign it, make a copy, and send it along to the repossession agency that took your car.  
+  After you get your letter, sign it, make a copy, and send it to the repossession agency that took your car.  
   % else:
   Your letters are ready. View and download your forms below. Click **:edit: Make changes** to fix any mistakes.
   
