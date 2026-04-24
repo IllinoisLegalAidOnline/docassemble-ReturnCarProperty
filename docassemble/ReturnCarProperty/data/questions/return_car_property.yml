@@ -340,10 +340,12 @@ subquestion: |
   % if i == 0:
   If you left multiple items in the car, just enter one of them. You will be able to add more items on the following screens.
   % else:
-  So far you have told us about ${fix_punctuation(comma_and_list(items.complete_elements()))}
+  So far you have told us about your ${fix_punctuation(comma_and_list(items.complete_elements()))}
   % endif
+
+  The letter will include a sentence that starts: "The car contained my…".
 fields:
-  - Personal item: items[i].name.text
+  - The car contained my:: items[i].name.text
     maxlength: 50
 ---
 id: property there is another
@@ -359,7 +361,7 @@ id: user name
 question: |
   What is your name?
 subquestion: |
-    If you don't have a first name and a last name, you can enter your name in the field labeled **First** and leave the other fields blank.
+    If you don't have both a first name and a last name, you can enter your name in the field labeled **First** and leave the other fields blank.
 fields:
   - First: users[0].name.first
   - Middle: users[0].name.middle
