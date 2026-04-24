@@ -172,7 +172,7 @@ question: |
 subquestion: |
   This is referred to as the "repossession company" or "repossession agency." This might not be the same company as the towing company or the **{creditor}**.
 
-  ${collapse_template(where_find_repo_info)}
+  You can learn about the company that repossessed your car from the creditor. 
 fields:
   - no label: know_repo_company
     datatype: yesnoradio
@@ -181,9 +181,10 @@ template: where_find_repo_info
 subject: |
   **Learn where to find this information**
 content: |
-  You can learn about the company that repossessed your car from the creditor. 
+  Your creditor may have sent you a notice of repossession. The notice should name the repossession agency that repossessed your car. 
   
-  The creditor is supposed to send you a notice of repossession. The notice should name the repossession agency that repossessed your car. You can also call the creditor to ask who repossessed your car.
+  You can call your creditor to ask about the company that repossessed your car. Creditors are required to give this information when asked.
+  
 ---
 id: fin company note
 continue button field: fin_company_note
@@ -349,7 +350,7 @@ id: property there is another
 question: |
   Did you leave another personal item in the car?
 subquestion: |
-  So far you have told us about ${fix_punctuation(comma_and_list(items))}
+  So far you have told us about your ${fix_punctuation(comma_and_list(items))}
 fields:
   - no label: items.there_is_another
     datatype: yesnoradio
