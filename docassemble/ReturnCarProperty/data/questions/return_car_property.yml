@@ -338,14 +338,14 @@ question: |
   % endif
 subquestion: |
   % if i == 0:
-  If you left multiple items in the car, just enter one of them. You will be able to add more items on the following screens.
+  If you left more than one thing in the car, just enter one for now. You will be able to add more on the following screens.
   % else:
   So far you have told us about your ${fix_punctuation(comma_and_list(items.complete_elements()))}
   % endif
 
-  The letter will include a sentence that starts: "The car contained my…".
+  The letter will include a sentence that starts: "The car contained my…"
 fields:
-  - The car contained my:: items[i].name.text
+  - Item left in car: items[i].name.text
     maxlength: 50
 ---
 id: property there is another
