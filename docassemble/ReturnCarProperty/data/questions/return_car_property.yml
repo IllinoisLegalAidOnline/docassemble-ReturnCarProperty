@@ -258,7 +258,7 @@ subquestion: |
 
   ${ collapse_template(repo_help_account_number) }  
 
-  If you have not been given an account number, you can leave this blank. However, not including it can make it harder for ${repo_company.name.first} to find your vehicle.
+  If you have not been given an account number, you can leave this blank.
 fields:
   - Account number: repo_company.account_number
     maxlength: 40
@@ -272,7 +272,7 @@ subquestion: |
 
   ${ collapse_template(fin_help_account_number) }  
 
-  If you have not been given an account number, you can leave this blank. However, not including it can make it harder for ${fin_company.name.first} to find your vehicle.
+  If you have not been given an account number, you can leave this blank.
 fields:
   - Account number : fin_company.account_number
     maxlength: 40
