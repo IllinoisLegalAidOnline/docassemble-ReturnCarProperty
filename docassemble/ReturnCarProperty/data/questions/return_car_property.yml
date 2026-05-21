@@ -62,6 +62,7 @@ code: |
   nav.set_section('section_car_property')
   repo_date
   car_make
+  vin_number
   items.gather()
   set_progress(60)
   
@@ -172,7 +173,7 @@ question: |
 subquestion: |
   This is referred to as the "repossession company" or "repossession agency." This might not be the same company as the towing company or the **{creditor}**.
 
-  You can learn about the company that repossessed your car from the creditor. 
+  ${collapse_template(where_find_repo_info)}
 fields:
   - no label: know_repo_company
     datatype: yesnoradio
@@ -181,7 +182,7 @@ template: where_find_repo_info
 subject: |
   **Learn where to find this information**
 content: |
-  Your creditor may have sent you a notice of repossession. The notice should name the repossession agency that repossessed your car. 
+  Your creditor is supposed to send you a notice of the repossession. This notice should name the licensed repossession agency that repossessed your car.
   
   You can call your creditor to ask about the company that repossessed your car. Creditors are required to give this information when asked.
   
@@ -253,13 +254,13 @@ id: repo company account number
 question: |
   What is your account number with ${repo_company.name.first}?
 subquestion: |
-  The account number could contain letters, numbers, or symbols.
+  The account number could contain letters, numbers, or symbols. It might also be called a case number or reference number.
 
   ${ collapse_template(repo_help_account_number) }  
 
-  If you have not been given an account number, you can leave this blank.
+  If you have not been given an account number, you can leave this blank. However, not including it can make it harder for ${repo_company.name.first} to find your vehicle.
 fields:
-  - Account number : repo_company.account_number
+  - Account number: repo_company.account_number
     maxlength: 40
     required: False
 ---
@@ -271,7 +272,7 @@ subquestion: |
 
   ${ collapse_template(fin_help_account_number) }  
 
-  If you have not been given an account number, you can leave this blank.
+  If you have not been given an account number, you can leave this blank. However, not including it can make it harder for ${fin_company.name.first} to find your vehicle.
 fields:
   - Account number : fin_company.account_number
     maxlength: 40
@@ -328,6 +329,22 @@ fields:
     maxlength: 4
     min: 1900
     max: 2100
+---
+id: vin number
+question: |
+  What is your car's VIN number?
+subquestion: |
+  A Vehicle Identification Number (VIN) is a unique 17-character code. All cars made after 1980 have a VIN that helps identify them.
+
+  % if know_repo_company:
+  You can find your car's VIN on your insurance card, insurance policy, vehicle title, or vehicle registration. If you do not know your car's VIN, you can leave this field blank. However, not including it can make it harder for ${repo_company.name.first} to find your vehicle.
+  % else:
+  You can find your car's VIN on your insurance card, insurance policy, vehicle title, or vehicle registration. If you do not know your car's VIN, you can leave this field blank. However, not including it can make it harder for ${fin_company.name.first} to find your vehicle.
+  % endif
+fields:
+  - VIN: vin_number
+    maxlength: 17
+    required: False
 ---
 id: property left
 question: |
@@ -589,6 +606,14 @@ review:
     button: |
       **Your car:**
       ${car_year} ${car_make} ${car_model}
+  - Edit: vin_number
+    button: |
+      **Your car's VIN number:**
+      % if vin_number != "":
+      ${vin_number}
+      % else:
+      None entered
+      % endif
   - Edit: items.revisit
     button: |
       **Your property:**
@@ -725,6 +750,14 @@ review:
     button: |
       **Your car:**
       ${car_year} ${car_make} ${car_model}
+  - Edit: vin_number
+    button: |
+      **Your car's VIN number:**
+      % if vin_number != "":
+      ${vin_number}
+      % else:
+      None entered
+      % endif
   - Edit: items.revisit
     button: |
       **Your property:**
