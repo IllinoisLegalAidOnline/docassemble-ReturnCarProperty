@@ -254,7 +254,7 @@ id: repo company account number
 question: |
   What is your account number with ${repo_company.name.first}?
 subquestion: |
-  The account number could contain letters, numbers, or symbols. It might also be called a case number or reference number.
+  The account number might also be called a case number, reference number, file number, or customer number.
 
   ${ collapse_template(repo_help_account_number) }  
 
@@ -268,7 +268,7 @@ id: fin company account number
 question: |
   What is your account number with ${fin_company.name.first}?
 subquestion: |
-  The account number could contain letters, numbers, or symbols.
+  The account number might also be called a file number or a customer number.
 
   ${ collapse_template(fin_help_account_number) }  
 
@@ -282,13 +282,13 @@ template: repo_help_account_number
 subject: |
   **Finding your account number**
 content: |  
-  Your account number should be listed on the collection notice or letter you got from ${ repo_company.name.first } or from the creditor. It might be called your file or customer number.
+  Your account number should be listed on the collection notice or letter you got from ${ repo_company.name.first } or from the creditor. 
 ---
 template: fin_help_account_number
 subject: |
   **Finding your account number**
 content: |  
-  Your account number may be listed on letters or other documents you have gotten from ${ fin_company.name.first }. It might be called your file or customer number.
+  Your account number may be listed on letters or other documents you have gotten from ${ fin_company.name.first }.
 ---
 id: repo date
 question: |
@@ -469,7 +469,7 @@ subquestion: |
   % if know_repo_company:
   Your letter is ready. View and download your forms below. Click **:edit: Make changes** to fix any mistakes.
 
-  After you get your letter, sign it, make a copy, and send it to the repossession agency that took your car.  
+  After you get your letter, sign it, make a copy, and send it by certified mail to the repossession agency that took your car.  
   % else:
   Your letters are ready. View and download your forms below. Click **:edit: Make changes** to fix any mistakes.
   
