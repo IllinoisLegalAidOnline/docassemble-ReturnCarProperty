@@ -18,7 +18,7 @@ objects:
 ---
 code: |
   ilao_easy_form_title = "Request return of personal property inside a repossessed car"
-  ilao_easy_form_url = "https://www.illinoislegalaid.org/node/30791"
+  ilao_easy_form_url = "https://www.illinoislegalaid.org/legal-information/request-personal-property-left-inside-repossessed-car"
   github_user = 'IllinoisLegalAidOnline'
   github_repo_name = 'docassemble-ReturnCarProperty'
   allowed_courts = ['Circuit']
